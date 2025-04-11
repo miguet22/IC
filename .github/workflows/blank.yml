@@ -1,0 +1,22 @@
+name: IC Migue
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verificar versión de Python
+        run: python3 --version
+
+      - name: Ejecutar hola.py
+        run: python3 hola.py
+
