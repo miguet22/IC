@@ -19,4 +19,7 @@ jobs:
 
       - name: Ejecutar hola.py
         run: python3 hola.py
+      - name: Mostrar estructura del proyecto
+        run: ls -R
+
 
