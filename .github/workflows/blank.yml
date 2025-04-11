@@ -12,14 +12,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Clona tu repositorio en la máquina de GitHub Actions
       - uses: actions/checkout@v4
 
-      - name: Verificar versión de Python
-        run: python3 --version
-
-      - name: Ejecutar hola.py
-        run: python3 hola.py
+      # Paso extra: Muestra todos los archivos y carpetas para verificar estructura
       - name: Mostrar estructura del proyecto
         run: ls -R
 
+      # Verifica la versión de Python instalada
+      - name: Verificar versión de Python
+        run: python3 --version
 
+      # Ejecuta el script hola.py desde la raíz
+      - name: Ejecutar hola.py
+        run: python3 hola.py
