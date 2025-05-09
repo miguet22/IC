@@ -1,1 +1,1 @@
-prin ("Vale ostrassss")
+printt ("Vale ostrassss")
