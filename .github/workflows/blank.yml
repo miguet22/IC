@@ -21,29 +21,18 @@ jobs:
         run: python3 --version
 
       - name: Ejecutar hola.py
-        run: |
-          python3 hola.py || echo "Error ejecutando el script" > error.log
+        run: python3 hola.py
 
-      # Aseguramos que el archivo error.log sea generado solo en caso de fallo
-      - name: Leer últimas líneas del log
-        if: failure()  # Solo se ejecuta si el paso anterior falló
-        run: |
-          if [ -f error.log ]; then
-            tail -n 10 error.log > error_tail.txt
-            echo "ERROR_TAIL<<EOF" >> $GITHUB_ENV
-            cat error_tail.txt >> $GITHUB_ENV
-            echo "EOF" >> $GITHUB_ENV
-          else
-            echo "No se encontró error.log"
-          fi
+
 
   notify-slack-on-failure:
     needs: build
-    if: failure()  # Solo se ejecuta si el job 'build' falló
+    if: failure()
     runs-on: ubuntu-latest
     steps:
       - name: Enviar últimas líneas del error a Slack
         run: |
           curl -X POST -H 'Content-type: application/json' \
-          --data "{\"text\":\"🚨 *El workflow falló.*\n📂 Repositorio: ${{ github.repository }}\n👤 Autor: ${{ github.actor }}\n🔗 Commit: https://github.com/${{ github.repository }}/commit/${{ github.sha }}\n\n🧪 *Últimas líneas del error:* \n\`\`\`\n$ERROR_TAIL\n\`\`\`\"}" \
+          --data "{\"text\":\"🚨 *El workflow falló.*\n📂 Repositorio: ${{ github.repository }}\n👤 Autor: ${{ github.actor }}\n🔗 Commit: https://github.com/${{ github.repository }}/commit/${{ github.sha }}\n
           ${{ secrets.SLACK_WEBHOOK_URL }}
+
