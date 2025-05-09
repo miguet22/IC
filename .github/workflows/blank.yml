@@ -14,15 +14,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Mostrar estructura del proyecto
+      - name: Ver estructura del proyecto
         run: ls -R
 
-      - name: Verificar versión de Python
+      - name: Ver versión de Python
         run: python3 --version
 
-      - name: Ejecutar hola.py
-        run: python3 hola.py
+      - name: Instalar dependencias
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install flask pytest
 
+      - name: Ejecutar tests con pytest
+        run: pytest
 
   notify-slack-on-failure:
     needs: build
