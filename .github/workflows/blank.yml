@@ -20,17 +20,28 @@ jobs:
       - name: Verificar versión de Python
         run: python3 --version
 
-      - name: Ejecutar hola.py y capturar errores
+      - name: Ejecutar hola.py y guardar error si falla
+        id: run_script
         run: |
-          python3 hola.py 2> error.log || echo "Script falló"
-        continue-on-error: true
+          set -o pipefail
+          python3 hola.py 2> error.log || echo "failed" > failed.flag
 
-      - name: Subir archivo de errores (para compartir entre jobs)
-        if: failure()
+      - name: Subir archivo de error si existe
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: error-log
-          path: error.log
+          path: |
+            error.log
+            failed.flag
+
+      - name: Forzar fallo si falló el script
+        if: always()
+        run: |
+          if [ -f failed.flag ]; then
+            echo "Script falló, marcando el job como fallido."
+            exit 1
+          fi
 
   notify-slack-on-failure:
     needs: build
@@ -52,5 +63,5 @@ jobs:
       - name: Enviar notificación a Slack
         run: |
           curl -X POST -H 'Content-type: application/json' \
-          --data "{\"text\":\"🚨 *El workflow falló.*\n📂 Repositorio: ${{ github.repository }}\n👤 Autor: ${{ github.actor }}\n🔗 Commit: https://github.com/${{ github.repository }}/commit/${{ github.sha }}\n\n🧪 *Error:* \n$ERROR_MSG\"}" \
+          --data "{\"text\":\"🚨 *El workflow falló.*\n📂 Repositorio: ${{ github.repository }}\n👤 Autor: ${{ github.actor }}\n🔗 Commit: https://github.com/${{ github.repository }}/commit/${{ github.sha }}\n\n🧪 *Error:* \n\`\`\`\n$ERROR_MSG\n\`\`\`\"}" \
           ${{ secrets.SLACK_WEBHOOK_URL }}

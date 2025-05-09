@@ -1,1 +1,2 @@
-printttt ("Vale ostrassss")
+print ("holaa")
+suma = 5 + "siete"
