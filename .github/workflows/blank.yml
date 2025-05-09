@@ -14,43 +14,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Mostrar estructura del proyecto
+        run: ls -R
 
-      - name: Ejecutar hola.py y guardar error si falla
-        id: run_script
-        run: |
-          set -o pipefail
-          python3 hola.py 2> error.log || echo "failed" > failed.flag
+      - name: Verificar versión de Python
+        run: python3 --version
 
-      - name: Subir archivo de error si existe
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: error-log
-          path: |
-            error.log
-            failed.flag
-
-      
+      - name: Ejecutar hola.py
+        run: python3 hola.py
 
   notify-slack-on-failure:
     needs: build
-    if: needs.build.result == 'failure'
+    if: failure()
     runs-on: ubuntu-latest
-
     steps:
-      - name: Descargar archivo de error
-        uses: actions/download-artifact@v4
-        with:
-          name: error-log
-
-      - name: Leer error y exportarlo como variable
-        run: |
-          echo "ERROR_MSG<<EOF" >> $GITHUB_ENV
-          cat error.log >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-
-      - name: Enviar notificación a Slack
+      - name: Notificar a Slack si falló
         run: |
           curl -X POST -H 'Content-type: application/json' \
-          --data "{\"text\":\"🚨 *El workflow falló.*\n📂 Repositorio: ${{ github.repository }}\n👤 Autor: ${{ github.actor }}\n🔗 Commit: https://github.com/${{ github.repository }}/commit/${{ github.sha }}\n\n🧪 *Error:* \n\`\`\`\n$ERROR_MSG\n\`\`\`\"}" \
+          --data '{"text":"🚨 *El workflow falló.*\nRepositorio: '${{ github.repository }}'\nCommit: '${{ github.sha }}'\nAutor: '${{ github.actor }}'"}' \
           ${{ secrets.SLACK_WEBHOOK_URL }}
