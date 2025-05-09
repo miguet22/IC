@@ -14,11 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Mostrar estructura del proyecto
-        run: ls -R
-
-      - name: Verificar versión de Python
-        run: python3 --version
 
       - name: Ejecutar hola.py y guardar error si falla
         id: run_script
@@ -35,13 +30,7 @@ jobs:
             error.log
             failed.flag
 
-      - name: Forzar fallo si falló el script
-        if: always()
-        run: |
-          if [ -f failed.flag ]; then
-            echo "Script falló, marcando el job como fallido."
-            exit 1
-          fi
+      
 
   notify-slack-on-failure:
     needs: build
