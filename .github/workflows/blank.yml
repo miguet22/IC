@@ -23,7 +23,7 @@ jobs:
       - name: Instalar dependencias
         run: |
           python3 -m pip install --upgrade pip
-          pip install flask pytest
+          pip install -r req.txt
 
       - name: Ejecutar tests con pytest
         run: pytest
