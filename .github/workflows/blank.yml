@@ -23,7 +23,15 @@ jobs:
       - name: Ejecutar hola.py
         run: python3 hola.py
 
+      # Este paso es para guardar el archivo de log si ocurre un error
+      - name: Generar log de error (si hay error)
+        run: |
+          python3 hola.py || echo "Error ejecutando el script" > error.log
+        continue-on-error: true
+
+      # Este paso recoge las últimas líneas del log
       - name: Leer últimas líneas del log
+        if: failure()  # Solo se ejecuta si el paso anterior falló
         run: |
           tail -n 10 error.log > error_tail.txt
           echo "ERROR_TAIL<<EOF" >> $GITHUB_ENV
@@ -32,7 +40,7 @@ jobs:
 
   notify-slack-on-failure:
     needs: build
-    if: failure()
+    if: failure()  # Solo se ejecuta si el job 'build' falló
     runs-on: ubuntu-latest
     steps:
       - name: Enviar últimas líneas del error a Slack
@@ -40,4 +48,3 @@ jobs:
           curl -X POST -H 'Content-type: application/json' \
           --data "{\"text\":\"🚨 *El workflow falló.*\n📂 Repositorio: ${{ github.repository }}\n👤 Autor: ${{ github.actor }}\n🔗 Commit: https://github.com/${{ github.repository }}/commit/${{ github.sha }}\n\n🧪 *Últimas líneas del error:* \n\`\`\`\n$ERROR_TAIL\n\`\`\`\"}" \
           ${{ secrets.SLACK_WEBHOOK_URL }}
-
