@@ -24,15 +24,13 @@ jobs:
         run: python3 hola.py
 
 
-
   notify-slack-on-failure:
     needs: build
     if: failure()
     runs-on: ubuntu-latest
     steps:
-      - name: Enviar últimas líneas del error a Slack
+      - name: Notificar a Slack si falló
         run: |
           curl -X POST -H 'Content-type: application/json' \
-          --data "{\"text\":\"🚨 *El workflow falló.*\n📂 Repositorio: ${{ github.repository }}\n👤 Autor: ${{ github.actor }}\n🔗 Commit: https://github.com/${{ github.repository }}/commit/${{ github.sha }}\n
+          --data '{"text":"🚨 *El workflow falló.*\nRepositorio: '${{ github.repository }}'\nCommit: '${{ github.sha }}'\nAutor: '${{ github.actor }}'"}' \
           ${{ secrets.SLACK_WEBHOOK_URL }}
-
