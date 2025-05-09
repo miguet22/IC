@@ -21,22 +21,21 @@ jobs:
         run: python3 --version
 
       - name: Ejecutar hola.py
-        run: python3 hola.py
-
-      # Este paso es para guardar el archivo de log si ocurre un error
-      - name: Generar log de error (si hay error)
         run: |
           python3 hola.py || echo "Error ejecutando el script" > error.log
-        continue-on-error: true
 
-      # Este paso recoge las últimas líneas del log
+      # Aseguramos que el archivo error.log sea generado solo en caso de fallo
       - name: Leer últimas líneas del log
         if: failure()  # Solo se ejecuta si el paso anterior falló
         run: |
-          tail -n 10 error.log > error_tail.txt
-          echo "ERROR_TAIL<<EOF" >> $GITHUB_ENV
-          cat error_tail.txt >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          if [ -f error.log ]; then
+            tail -n 10 error.log > error_tail.txt
+            echo "ERROR_TAIL<<EOF" >> $GITHUB_ENV
+            cat error_tail.txt >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+          else
+            echo "No se encontró error.log"
+          fi
 
   notify-slack-on-failure:
     needs: build
