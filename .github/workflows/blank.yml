@@ -14,13 +14,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
       - name: Instalar dependencias
         run: |
-          python3 -m pip install --upgrade pip
+          python -m pip install --upgrade pip
           pip install -r req.txt
+          pip install pytest pytest-cov
 
-      - name: Ejecutar tests con pytest
-        run: pytest
+      - name: Ejecutar tests con cobertura
+        run: |
+          pytest --cov=. --cov-report=xml
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v2
+        with:
+          projectBaseDir: .
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: https://sonarcloud.io
 
   notify-slack-on-failure:
     needs: build
