@@ -14,12 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Ver estructura del proyecto
-        run: ls -R
-
-      - name: Ver versión de Python
-        run: python3 --version
-
       - name: Instalar dependencias
         run: |
           python3 -m pip install --upgrade pip
