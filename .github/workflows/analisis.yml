@@ -29,13 +29,10 @@ jobs:
         run: |
           pytest --cov=. --cov-report=xml
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2
+      - name: Codacy Analysis
+        uses: codacy/codacy-analysis-cli-action@v4
         with:
-          projectBaseDir: .
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: https://sonarcloud.io
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
 
   notify-slack-on-failure:
     needs: build
@@ -47,3 +44,4 @@ jobs:
           curl -X POST -H 'Content-type: application/json' \
           --data '{"text":"🚨 *El workflow falló.*\nRepositorio: '${{ github.repository }}'\nCommit: '${{ github.sha }}'\nAutor: '${{ github.actor }}'"}' \
           ${{ secrets.SLACK_WEBHOOK_URL }}
+
