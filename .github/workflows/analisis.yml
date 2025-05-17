@@ -27,13 +27,12 @@ jobs:
 
       - name: Ejecutar tests con cobertura
         run: |
-          pytest --cov=. --cov-report=xml
+          pytest pruebas/ --cov=pruebas --cov-report=xml
 
       - name: Codacy Analysis
         uses: codacy/codacy-analysis-cli-action@v4
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-
   notify-slack-on-failure:
     needs: build
     if: failure()

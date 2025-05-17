@@ -1,0 +1,6 @@
+# .codacy.yml
+---
+exclude_paths:
+  - "**"
+include_paths:
+  - "pruebas/**"
