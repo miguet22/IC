@@ -1,12 +1,11 @@
 from flask import Flask
-var = "Hola Mundo"
 
 app = Flask(__name__)
 
 @app.route("/")
-
 def index():
-    return var
+    resultado = 5 * 5
+    return f"El resultado es: {resultado}"
 
 if __name__ == "__main__":
     app.run()

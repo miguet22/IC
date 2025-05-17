@@ -44,4 +44,3 @@ jobs:
           curl -X POST -H 'Content-type: application/json' \
           --data '{"text":"🚨 *El workflow falló.*\nRepositorio: '${{ github.repository }}'\nCommit: '${{ github.sha }}'\nAutor: '${{ github.actor }}'"}' \
           ${{ secrets.SLACK_WEBHOOK_URL }}
-
