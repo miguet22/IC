@@ -1,13 +1,13 @@
 from flask import Flask
-import os  
 
 app = Flask(__name__)
+
 
 @app.route("/")
 def index():
     resultado = 5 * 6
-    sin_usar = "Hola"  
     return f"El resultado es: {resultado}"
+
 
 if __name__ == "__main__":
     app.run()
