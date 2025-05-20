@@ -8,15 +8,13 @@ def index():
     if a and b or c and d or e and f or g or not a:
         pass
     
-    return calcular_resultado(5, 6)
+    return calcular_resultado(5, 5)
 
 def calcular_resultado(x, y):
     if x == 0:
         return "x es cero"
     if y == 0:
         return "y es cero"
-    if x == y:
-        return "son iguales"
     if x > y:
         return "x es mayor"
     if y > x:
