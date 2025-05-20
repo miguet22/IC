@@ -25,12 +25,26 @@ jobs:
           pip install -r req.txt
           pip install pytest pytest-cov flake8
 
-      - name: Lint con flake8
+      - name: Lint con flake8 y notificación a Slack
         run: |
-          # Falla si hay errores graves de sintaxis o nombres no definidos
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # Muestra advertencias sin romper el workflow
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+          echo "Ejecutando flake8..."
+          flake8 . --max-complexity=10 --max-line-length=127 --statistics > flake8_output.txt
+
+          if [ -s flake8_output.txt ]; then
+            echo "Errores encontrados:"
+            cat flake8_output.txt
+
+            # Formatear mensaje para Slack (máx 20 líneas)
+            text=$(cat flake8_output.txt | head -n 20 | sed ':a;N;$!ba;s/\n/\\n/g')
+
+            curl -X POST -H 'Content-type: application/json' \
+              --data '{"text":"🚨 *Errores de flake8 detectados en el pipeline.*\n\n```'"$text"'```"}' \
+              ${{ secrets.SLACK_WEBHOOK_URL }}
+
+            exit 1
+          else
+            echo "Sin errores de flake8."
+          fi
 
       - name: Ejecutar tests con cobertura
         run: |
