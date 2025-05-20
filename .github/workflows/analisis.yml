@@ -25,25 +25,12 @@ jobs:
           pip install -r req.txt
           pip install pytest pytest-cov flake8
 
-      - name: Lint con flake8 y notificación a Slack si hay errores
-        continue-on-error: true  # 🔹 Esto permite que el job siga aunque flake8 falle
+      - name: Lint con flake8
         run: |
-          echo "Ejecutando flake8..."
-          flake8 . --max-complexity=10 --max-line-length=127 --statistics > flake8_output.txt
-
-          if [ -s flake8_output.txt ]; then
-            echo "Errores encontrados por flake8:"
-            cat flake8_output.txt
-
-            # Enviar los primeros 20 errores por Slack
-            text=$(head -n 20 flake8_output.txt | sed ':a;N;$!ba;s/\n/\\n/g')
-
-            curl -X POST -H 'Content-type: application/json' \
-              --data '{"text":"🚨 *Errores de flake8 detectados en el pipeline.*\n\n```'"$text"'```"}' \
-              ${{ secrets.SLACK_WEBHOOK_URL }}
-          else
-            echo "Sin errores de flake8."
-          fi
+          # Falla si hay errores graves de sintaxis o nombres no definidos
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # Muestra advertencias sin romper el workflow
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
       - name: Ejecutar tests con cobertura
         run: |
@@ -59,7 +46,7 @@ jobs:
     if: failure()
     runs-on: ubuntu-latest
     steps:
-      - name: Notificar a Slack si falló el workflow
+      - name: Notificar a Slack si falló
         run: |
           curl -X POST -H 'Content-type: application/json' \
           --data '{"text":"🚨 *El workflow falló.*\nRepositorio: '${{ github.repository }}'\nCommit: '${{ github.sha }}'\nAutor: '${{ github.actor }}'"}' \
