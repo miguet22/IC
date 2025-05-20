@@ -19,9 +19,9 @@ def calcular_resultado(x, y):
         return "x es mayor"
     if y > x:
         return "y es mayor"
-    if x + y > 10:
+    if x * y > 10:
         return "la suma es mayor a 10"
-    if x + y <= 10:
+    if x * y <= 10:
         return "la suma es menor o igual a 10"
     return f"Resultado: {x * y}"
 
