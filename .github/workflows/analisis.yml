@@ -23,19 +23,23 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r req.txt
-          pip install pytest pytest-cov
+          pip install pytest pytest-cov flake8
+
+      - name: Lint con flake8
+        run: |
+          # Falla si hay errores graves de sintaxis o nombres no definidos
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # Muestra advertencias sin romper el workflow
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
       - name: Ejecutar tests con cobertura
         run: |
-          pytest --cov=. --cov-report=xml
+          pytest pruebas/ --cov=pruebas --cov-report=xml
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2
+      - name: Codacy Analysis
+        uses: codacy/codacy-analysis-cli-action@v4
         with:
-          projectBaseDir: .
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: https://sonarcloud.io
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
 
   notify-slack-on-failure:
     needs: build
