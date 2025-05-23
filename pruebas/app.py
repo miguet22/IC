@@ -2,28 +2,13 @@ from flask import Flask
 
 app = Flask(__name__)
 
+
 @app.route("/")
 def index():
-    a, b, c, d, e, f, g = True, False, True, True, False, True, True
-    if a and b or c and d or e and f or g or not a:
-        pass
-    
-    return calcular_resultado(5, 5)
+    resultado = 5 * 6
+    if resultado > 20:
+        return f"El resultado mayor a 20"
 
-def calcular_resultado(x, y):
-    if x == 0:
-        return "x es cero"
-    if y == 0:
-        return "y es cero"
-    if x > y:
-        return "x es mayor"
-    if y > x:
-        return "y es mayor"
-    if x * y > 10:
-        return "el resultado es mayor a 10"
-    if x * y <= 10:
-        return "el resultado  es menor o igual a 10"
-    
 
 if __name__ == "__main__":
     app.run()

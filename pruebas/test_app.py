@@ -1,4 +1,4 @@
 from app import index
 
 def test_index():
-    assert index() == "el resultado es mayor a 10"
+    assert index() == "El resultado mayor a 20"
