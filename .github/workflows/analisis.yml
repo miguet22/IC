@@ -27,9 +27,7 @@ jobs:
 
       - name: Lint con flake8
         run: |
-          # Falla si hay errores graves de sintaxis o nombres no definidos
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          # Muestra advertencias sin romper el workflow
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
       - name: Ejecutar tests con cobertura
@@ -40,6 +38,16 @@ jobs:
         uses: codacy/codacy-analysis-cli-action@v4
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+
+      - name: Instalar Railway CLI
+        run: curl -fsSL https://railway.app/install.sh | sh
+
+      - name: Deploy a Railway
+        if: success()
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: |
+          ~/.railway/bin/railway up
 
   notify-slack-on-failure:
     needs: build
