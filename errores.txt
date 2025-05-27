@@ -21,7 +21,8 @@ app = Flask(__name__)
 @app.route("/")
 def index():
     resultado = 5 * 6
-    return f"El resultado es: {resultado}"
+    if resultado > 20:
+        return f"El resultado mayor a 20"
 
 
 if __name__ == "__main__":
@@ -32,7 +33,7 @@ if __name__ == "__main__":
 from app import index
 
 def test_index():
-    assert index() == "El resultado es: 30"
+    assert index() == "El resultado mayor a 20"
 
 //////////////////////////
 ------------------------------------------------------------------

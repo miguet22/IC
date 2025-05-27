@@ -20,10 +20,10 @@ def calcular_resultado(x, y):
     if y > x:
         return "y es mayor"
     if x * y > 10:
-        return "el resultado es mayor a 10"
+        return "la multi es mayor a 10"
     if x * y <= 10:
-        return "el resultado  es menor o igual a 10"
-    
+        return "la multi es menor o igual a 10"
+    return f"Resultado: {x * y}"
 
 if __name__ == "__main__":
     app.run()
