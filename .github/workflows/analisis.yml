@@ -40,21 +40,18 @@ jobs:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
 
   deploy:
+   deploy:
+    name: Deploy
     needs: build
     runs-on: ubuntu-latest
-    if: success()
-
     steps:
       - uses: actions/checkout@v4
 
-      - name: Instalar y deployar en Render
-        env:
-          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
-        run: |
-          curl -fsSL https://cdn.render.com/cli/install.sh | bash
-          export PATH="$HOME/.render/bin:$PATH"
-          render login --api-key $RENDER_API_KEY
-          render deploy service srv-d0r3fqh5pdvs73dkth8g
+      - name: Deploy to Render
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.SERVICE_ID }}
+          api-key: ${{ secrets.RENDER_API_KEY }}
 
   notify-slack-on-failure:
     needs: build
