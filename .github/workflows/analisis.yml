@@ -40,10 +40,10 @@ jobs:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
 
   deploy:
-   deploy:
-    name: Deploy
     needs: build
     runs-on: ubuntu-latest
+    if: success()
+
     steps:
       - uses: actions/checkout@v4
 
