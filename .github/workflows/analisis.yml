@@ -44,14 +44,21 @@ jobs:
     runs-on: ubuntu-latest
     if: success()
 
+    outputs:
+      app_url: ${{ steps.output_url.outputs.url }}
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Deploy to Render
+      - name: Deploy a Render
         uses: johnbeynon/render-deploy-action@v0.0.8
         with:
           service-id: ${{ secrets.SERVICE_ID }}
           api-key: ${{ secrets.RENDER_API_KEY }}
+
+      - name: Set app URL
+        id: output_url
+        run: echo "::set-output name=url::https://ic-ingsw.onrender.com/"
 
   notify-slack-on-failure:
     needs: build
