@@ -56,7 +56,7 @@ jobs:
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
         run: |
-          source $HOME/.bashrc  # O cargar el PATH actualizado (alternativa)
+          export PATH="$HOME/.render/bin:$PATH"
           render login --api-key $RENDER_API_KEY
           render deploy service srv-d0r3fqh5pdvs73dkth8g
 
