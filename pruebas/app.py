@@ -7,32 +7,8 @@ def index():
     a, b, c, d, e, f, g = True, False, True, True, False, True, True
     if a and b or c and d or e and f or g or not a:
         pass
-
-    resultado = calcular_resultado(5, 5)
-    return f"""
-    <html>
-    <head>
-        <style>
-            body {{
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 100vh;
-                margin: 0;
-                font-family: Arial, sans-serif;
-                background-color: #f0f0f0;
-            }}
-            h1 {{
-                font-size: 48px;
-                color: #333;
-            }}
-        </style>
-    </head>
-    <body>
-        <h1>{resultado}</h1>
-    </body>
-    </html>
-    """
+    
+    return calcular_resultado(5, 5)
 
 def calcular_resultado(x, y):
     if x == 0:
