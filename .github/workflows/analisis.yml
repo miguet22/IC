@@ -47,15 +47,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Instalar Railway CLI
+      - name: Instalar Render CLI
         run: |
-          curl -fsSL https://railway.app/install.sh | sh
-          echo "$HOME/.railway/bin" >> $GITHUB_PATH
+          curl -fsSL https://cdn.render.com/cli/install.sh | bash
+          echo "$HOME/.render/bin" >> $GITHUB_PATH
 
-      - name: Deploy a Railway
+      - name: Deploy a Render
         env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        run: railway up
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        run: |
+          render login --api-key $RENDER_API_KEY
+          render deploy service srv-d0r3fqh5pdvs73dkth8g
 
   notify-slack-on-failure:
     needs: build
