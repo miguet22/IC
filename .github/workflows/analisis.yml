@@ -45,7 +45,7 @@ jobs:
     if: success()
 
     outputs:
-      app_url: ${{ steps.output_url.outputs.url }}
+      app_url: ${{ steps.set_url.outputs.url }}
 
     steps:
       - uses: actions/checkout@v4
@@ -57,8 +57,8 @@ jobs:
           api-key: ${{ secrets.RENDER_API_KEY }}
 
       - name: Set app URL
-        id: output_url
-        run: echo "::set-output name=url::https://ic-ingsw.onrender.com/"
+        id: set_url
+        run: echo "url=https://ic-ingsw.onrender.com/" >> $GITHUB_OUTPUT
 
   notify-slack-on-failure:
     needs: build
