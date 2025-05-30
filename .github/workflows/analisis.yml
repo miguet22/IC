@@ -43,10 +43,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: success()
-
     outputs:
       app_url: ${{ steps.set_url.outputs.url }}
-
     steps:
       - uses: actions/checkout@v4
 
@@ -59,6 +57,20 @@ jobs:
       - name: Set app URL
         id: set_url
         run: echo "url=https://ic-ingsw.onrender.com/" >> $GITHUB_OUTPUT
+
+  notify-slack-success:
+    needs: deploy
+    if: success()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notificar a Slack si fue exitoso 🎉
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+          --data '{
+            "text":"✅ *Deploy exitoso!* 🎉\nRepositorio: '${{ github.repository }}'\nAutor: '${{ github.actor }}'\n🔗 URL: https://ic-ingsw.onrender.com/",
+            "attachments":[{"image_url":"https://media1.tenor.com/m/wsChytFfrS4AAAAd/monki-flip-monkey.gif","text":"¡Mirá qué bonito quedó!"}]
+          }' \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
 
   notify-slack-on-failure:
     needs: build
