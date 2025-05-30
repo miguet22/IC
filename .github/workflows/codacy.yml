@@ -1,6 +1,0 @@
-# .codacy.yml
----
-exclude_paths:
-  - ".github/**"
-include_paths:
-  - "pruebas/**"
