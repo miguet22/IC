@@ -88,6 +88,8 @@ jobs:
     if: success()
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
       - name: Parsear nombre de tarea desde el commit
         id: parse_commit
         run: |
