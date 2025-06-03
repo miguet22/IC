@@ -101,4 +101,4 @@ jobs:
             echo "task_name=no-task" >> $GITHUB_OUTPUT
 
       - name: Mostrar nombre de tarea parseado
-        run: echo "Tarea detectada desde commit: ${{ steps.parse_commit.outputs.task_name }}"
+        run: echo "Tarea detectada desde commit ${{ steps.parse_commit.outputs.task_name }}"
