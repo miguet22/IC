@@ -90,26 +90,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Parsear nombre de tarea desde el commit
+      - name: Parsear nombre de tarea desde el commit si existe
         id: parse_commit
         run: |
-          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
-          TASK_NAME=$(echo $COMMIT_MESSAGE | grep -o "task [0-9]*")
-          echo "task_name=${TASK_NAME}" >> $GITHUB_OUTPUT
+          if git rev-parse HEAD >/dev/null 2>&1; then
+            COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+            TASK_NAME=$(echo "$COMMIT_MESSAGE" | grep -o "task [0-9]*" || echo "task not found")
+            echo "task_name=${TASK_NAME}" >> $GITHUB_OUTPUT
+          else
+            echo "task_name=no-task" >> $GITHUB_OUTPUT
 
-      - name: Buscar tarea en ClickUp y actualizar estado
-        run: |
-          TASK_NAME="${{ steps.parse_commit.outputs.task_name }}"
-          echo "Buscando tarea: ${TASK_NAME}"
-          RESPONSE=$(curl -s -X GET \
-            -H "Authorization: ${{ secrets.CLICKUP_API_TOKEN }}" \
-            "https://api.clickup.com/api/v2/team/${{ secrets.CLICKUP_TEAM_ID }}/task?name=${TASK_NAME}")
-          TASK_ID=$(echo $RESPONSE | jq -r '.tasks[0].id')
-          echo "Tarea encontrada: ${TASK_ID}"
-
-          # Mover la tarea a Done
-          curl -X PUT \
-            -H "Authorization: ${{ secrets.CLICKUP_API_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{"status":"done"}' \
-            "https://api.clickup.com/api/v2/task/${TASK_ID}"
+      - name: Mostrar nombre de tarea parseado
+        run: echo "Tarea detectada desde commit: ${{ steps.parse_commit.outputs.task_name }}"
