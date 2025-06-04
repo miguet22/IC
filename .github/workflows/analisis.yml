@@ -100,6 +100,12 @@ jobs:
       - name: Mostrar nombre de tarea parseado
         run: echo "Tarea detectada desde commit ${{ steps.parse_commit.outputs.task_name }}"
 
+      - name: Obtener JSON de la lista Doing (Depuración)
+        if: steps.parse_commit.outputs.task_name != 'no-task'
+        run: |
+          echo "JSON crudo de la lista Doing:"
+          curl -s "https://api.trello.com/1/lists/${{ secrets.TRELLO_DOING_LIST_ID }}/cards?key=${{ secrets.TRELLO_API_KEY }}&token=${{ secrets.TRELLO_API_TOKEN }}" | jq .
+
       - name: Buscar tarjeta en la lista Doing
         id: find_card
         if: steps.parse_commit.outputs.task_name != 'no-task'
