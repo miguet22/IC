@@ -83,23 +83,38 @@ jobs:
           --data '{"text":"🚨 *El workflow falló.*\nRepositorio: '${{ github.repository }}'\nCommit: '${{ github.sha }}'\nAutor: '${{ github.actor }}'"}' \
           ${{ secrets.SLACK_WEBHOOK_URL }}
 
-  update-clickup-task:
+  update-trello-card:
     needs: deploy
     if: success()
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Parsear nombre de tarea desde el commit si existe
+      - name: Parsear nombre de tarea desde el commit
         id: parse_commit
         run: |
-          if git rev-parse HEAD >/dev/null 2>&1; then
-            COMMIT_MESSAGE=$(git log -1 --pretty=%B)
-            TASK_NAME=$(echo "$COMMIT_MESSAGE" | grep -o "task [0-9]*" || echo "task not found")
-            echo "task_name=${TASK_NAME}" >> $GITHUB_OUTPUT
-          else
-            echo "task_name=no-task" >> $GITHUB_OUTPUT
-          fi
+          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+          TASK_NAME=$(echo "$COMMIT_MESSAGE" | grep -o "fin Task [0-9]\+" | sed 's/fin //g' || echo "no-task")
+          echo "task_name=$TASK_NAME" >> $GITHUB_OUTPUT
 
       - name: Mostrar nombre de tarea parseado
-        run: echo "Tarea detectada desde commit ${{ steps.parse_commit.outputs.task_name }}"
+        run: echo "Tarea detectada desde commit: ${{ steps.parse_commit.outputs.task_name }}"
+
+      - name: Buscar tarjeta en la lista Doing
+        id: find_card
+        if: steps.parse_commit.outputs.task_name != 'no-task'
+        run: |
+          CARD_ID=$(curl -s "https://api.trello.com/1/lists/${{ secrets.TRELLO_DOING_LIST_ID }}/cards?key=${{ secrets.TRELLO_API_KEY }}&token=${{ secrets.TRELLO_API_TOKEN }}" | jq -r '.[] | select(.name == "${{ steps.parse_commit.outputs.task_name }}") | .id')
+          if [ -z "$CARD_ID" ]; then
+            echo "No se encontró la tarjeta '${{ steps.parse_commit.outputs.task_name }}' en la lista Doing."
+            echo "card_id=no-card" >> $GITHUB_OUTPUT
+          else
+            echo "card_id=$CARD_ID" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Mover tarjeta de Doing a Done
+        if: steps.find_card.outputs.card_id != 'no-card'
+        run: |
+          curl -X PUT \
+          -H "Accept: application/json" \
+          "https://api.trello.com/1/cards/${{ steps.find_card.outputs.card_id }}?idList=${{ secrets.TRELLO_DONE_LIST_ID }}&key=${{ secrets.TRELLO_API_KEY }}&token=${{ secrets.TRELLO_API_TOKEN }}"
