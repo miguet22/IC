@@ -104,7 +104,8 @@ jobs:
         id: find_card
         if: steps.parse_commit.outputs.task_name != 'no-task'
         run: |
-          CARD_ID=$(curl -s "https://api.trello.com/1/lists/${{ secrets.TRELLO_DOING_LIST_ID }}/cards?key=${{ secrets.TRELLO_API_KEY }}&token=${{ secrets.TRELLO_API_TOKEN }}" | jq -r '.[] | select(.name == "${{ steps.parse_commit.outputs.task_name }}") | .id')
+          echo "Buscando tarjeta con nombre: ${{ steps.parse_commit.outputs.task_name }}"
+          CARD_ID=$(curl -s "https://api.trello.com/1/lists/${{ secrets.TRELLO_DOING_LIST_ID }}/cards?key=${{ secrets.TRELLO_API_KEY }}&token=${{ secrets.TRELLO_API_TOKEN }}" | jq -r '.[] | select(.name == "'${{ steps.parse_commit.outputs.task_name }}'") | .id')
           if [ -z "$CARD_ID" ]; then
             echo "No se encontró la tarjeta '${{ steps.parse_commit.outputs.task_name }}' en la lista Doing."
             echo "card_id=no-card" >> $GITHUB_OUTPUT
