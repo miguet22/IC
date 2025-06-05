@@ -1,8 +1,8 @@
 import os
 import requests
 
-api_key = os.getenv("TRELLO_API_KEY")
-token = os.getenv("TRELLO_API_TOKEN")
+api_key = "c1db904abfa232beccd163727bb2722d"
+token = os.getenv("ATTA6b793b298c4ef774ab2bec8215db70c795be58af8e9909921274eff60ed0f4e5672FB92E")
 doing_list_id = os.getenv("TRELLO_DOING_LIST_ID")
 done_list_id = os.getenv("TRELLO_DONE_LIST_ID")
 
@@ -13,7 +13,7 @@ response = requests.get(
 )
 
 if response.status_code != 200:
-    print("❌ Error al obtener las tarjetas:", response.text)
+    print("Error al obtener las tarjetas:", response.text)
     exit(1)
 
 cards = response.json()
