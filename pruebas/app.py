@@ -18,7 +18,7 @@ def calcular_resultado(x, y):
     if x > y:
         return "x es mayor"
     if y > x:
-        return "y e mayor"
+        return "y esss mayor"
     if x * y > 10:
         return "la multi es mayor a 10"
     if x * y <= 10:
