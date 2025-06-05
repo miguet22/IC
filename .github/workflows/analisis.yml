@@ -82,7 +82,7 @@ jobs:
         run: |
           curl -X POST -H 'Content-type: application/json' \
           --data '{
-            "text":"✅ *Deploy exitoso!* 🎉\nRepositorio: '${{ github.repository }}'\nAutor: '${{ github.actor }}'\n🔗 URL: https://ic-ingsw.onrender.com/",
+            "text":"✅ *Deploy exitoso!* 🎉\nRepositorio: '${{ github.repository }}'\nAutor: '${{ github.actor }}'\n🔗 URL: https://ic-qt8c.onrender.com/",
             "attachments":[{"image_url":"https://media1.tenor.com/m/wsChytFfrS4AAAAd/monki-flip-monkey.gif"}]
           }' \
           ${{ secrets.SLACK_WEBHOOK_URL }}
