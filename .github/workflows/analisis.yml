@@ -23,7 +23,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r req.txt
-          pip install pytest pytest-cov flake8
+          pip install pytest pytest-cov flake8 requests
 
       - name: Lint con flake8
         run: |
@@ -58,8 +58,23 @@ jobs:
         id: set_url
         run: echo "url=https://ic-ingsw.onrender.com/" >> $GITHUB_OUTPUT
 
-  notify-slack-success:
+  update-trello-card:
     needs: deploy
+    if: success()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ejecutar script de Trello
+        run: python yaml/trello_task_manager.py
+        env:
+          TRELLO_API_KEY: ${{ secrets.TRELLO_API_KEY }}
+          TRELLO_API_TOKEN: ${{ secrets.TRELLO_API_TOKEN }}
+          TRELLO_DOING_LIST_ID: ${{ secrets.TRELLO_DOING_LIST_ID }}
+          TRELLO_DONE_LIST_ID: ${{ secrets.TRELLO_DONE_LIST_ID }}
+
+  notify-slack-success:
+    needs: update-trello-card
     if: success()
     runs-on: ubuntu-latest
     steps:
@@ -82,58 +97,3 @@ jobs:
           curl -X POST -H 'Content-type: application/json' \
           --data '{"text":"🚨 *El workflow falló.*\nRepositorio: '${{ github.repository }}'\nCommit: '${{ github.sha }}'\nAutor: '${{ github.actor }}'"}' \
           ${{ secrets.SLACK_WEBHOOK_URL }}
-
-  update-trello-card:
-    needs: deploy
-    if: success()
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Parsear nombre de tarea desde el commit
-        id: parse_commit
-        run: |
-          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
-          echo "Mensaje del commit: $COMMIT_MESSAGE"
-          TASK_NAME=$(echo "$COMMIT_MESSAGE" | grep -o "Task *[0-9]\+" | sed 's/  */ /g' | xargs)
-          if [ -z "$TASK_NAME" ]; then
-            echo "No se encontró ninguna tarea en el commit"
-            echo "task_name=no-task" >> $GITHUB_OUTPUT
-          else
-            echo "task_name=$TASK_NAME" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Mostrar nombre de tarea parseado
-        run: echo "Tarea detectada desde commit ${{ steps.parse_commit.outputs.task_name }}"
-
-      - name: Buscar tarjeta en la lista Doing
-        id: find_card
-        if: steps.parse_commit.outputs.task_name != 'no-task'
-        run: |
-          echo "Buscando tarjeta con nombre: ${{ steps.parse_commit.outputs.task_name }}"
-          RESPONSE=$(curl -s "https://api.trello.com/1/lists/${{ secrets.TRELLO_DOING_LIST_ID }}/cards?key=${{ secrets.TRELLO_API_KEY }}&token=${{ secrets.TRELLO_API_TOKEN }}")
-
-          echo "Respuesta cruda de Trello:"
-          echo "$RESPONSE"
-
-          echo "$RESPONSE" | jq . >/dev/null 2>&1
-          if [ $? -ne 0 ]; then
-            echo "❌ La respuesta de Trello no es JSON válido."
-            exit 1
-          fi
-
-          CARD_ID=$(echo "$RESPONSE" | jq -r --arg task_name "${{ steps.parse_commit.outputs.task_name }}" '.[] | select(.name == $task_name) | .id')
-
-          if [ -z "$CARD_ID" ]; then
-            echo "No se encontró la tarjeta '${{ steps.parse_commit.outputs.task_name }}' en la lista Doing."
-            echo "card_id=no-card" >> $GITHUB_OUTPUT
-          else
-            echo "card_id=$CARD_ID" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Mover tarjeta de Doing a Done
-        if: steps.find_card.outputs.card_id != 'no-card'
-        run: |
-          curl -X PUT \
-          -H "Accept: application/json" \
-          "https://api.trello.com/1/cards/${{ steps.find_card.outputs.card_id }}?idList=${{ secrets.TRELLO_DONE_LIST_ID }}&key=${{ secrets.TRELLO_API_KEY }}&token=${{ secrets.TRELLO_API_TOKEN }}"
