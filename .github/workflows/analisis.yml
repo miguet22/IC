@@ -95,6 +95,6 @@ jobs:
     - name: Notificar a Slack si falló
       if: failure()
       run: |
-        curl -X POST -H "Content-type: application/json" \
+        curl -X POST -H 'Content-type: application/json' \
         --data "{\"text\":\"🚨 *El workflow falló.* ❌\\nRepositorio: ${{ github.repository }}\\nCommit: ${{ github.sha }}\\nAutor: ${{ github.actor }}\"}" \
         ${{ secrets.SLACK_WEBHOOK_URL }}
