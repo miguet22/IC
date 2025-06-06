@@ -5,3 +5,4 @@ exclude_paths:
   - ".github/**"
   - "errores.txt"
   - "req.txt"
+  - "yaml/**"

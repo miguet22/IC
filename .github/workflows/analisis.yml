@@ -14,14 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Cache pip
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/req.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -33,18 +25,15 @@ jobs:
           pip install -r req.txt
           pip install pytest pytest-cov flake8 requests
 
-      - name: Lint con flake8 (solo errores críticos)
-        run: flake8 pruebas/ --select=E9,F63,F7,F82 --statistics
+      - name: Lint con flake8
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
       - name: Ejecutar tests con cobertura
         run: |
-          pytest pruebas/ --cov=pruebas --cov-report=xml --maxfail=1
+          pytest pruebas/ --cov=pruebas --cov-report=xml
 
-  codacy-analysis:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - uses: actions/checkout@v4
       - name: Codacy Analysis
         uses: codacy/codacy-analysis-cli-action@v4
         with:
@@ -68,13 +57,15 @@ jobs:
       - name: Set app URL
         id: set_url
         run: echo "url=https://ic-ingsw.onrender.com/" >> $GITHUB_OUTPUT
-  
+
   notify-slack-success:
     needs: deploy
     if: success()
     runs-on: ubuntu-latest
     steps:
-      - name: Ejecutar script de Python para notificar a Slack sobre el exito del deploy
+      - uses: actions/checkout@v4
+
+      - name: Notificar éxito a Slack
         run: python3 yaml/slack_notify_sucess.py
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
@@ -118,7 +109,9 @@ jobs:
     if: failure()
     runs-on: ubuntu-latest
     steps:
-      - name: Ejecutar script de Python para notificar a Slack sobre el error
+      - uses: actions/checkout@v4
+
+      - name: Notificar error a Slack
         run: python3 yaml/slack_notify_error.py
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
