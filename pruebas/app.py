@@ -2,28 +2,42 @@ from flask import Flask
 
 app = Flask(__name__)
 
+def calcular_resultado():
+    return 5 * 6
+
 @app.route("/")
 def index():
-    a, b, c, d, e, f, g = True, False, True, True, False, True, True
-    if a and b or c and d or e and f or g or not a:
-        pass
-    
-    return calcular_resultado(1, 5)
-
-def calcular_resultado(x, y):
-    if x == 0:
-        return "x es cero"
-    if y == 0:
-        return "y es cero"
-    if x > y:
-        return "x es mayor"
-    if y > x:
-        return "y esSS mayor"
-    if x * y > 10:
-        return "la multi es mayor a 10"
-    if x * y <= 10:
-        return "la multi es menor o igual a 10"
-    return f"Resultado: {x * y}"
+    resultado = calcular_resultado()
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Resultado</title>
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                background-color: #f0f0f0;
+                text-align: center;
+                padding-top: 50px;
+            }}
+            .resultado {{
+                font-size: 2em;
+                color: #333;
+                background-color: #fff;
+                display: inline-block;
+                padding: 20px 40px;
+                border-radius: 10px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="resultado">
+            El resultado es: <strong>{resultado}</strong>
+        </div>
+    </body>
+    </html>
+    """
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)

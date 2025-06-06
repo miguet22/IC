@@ -17,23 +17,20 @@ from flask import Flask
 
 app = Flask(__name__)
 
+def calcular_resultado():
+    return 5 * 6
 
 @app.route("/")
 def index():
-    resultado = 5 * 6
-    if resultado > 20:
-        return f"El resultado mayor a 20"
-
-
-if __name__ == "__main__":
-    app.run()
+    return str(calcular_resultado())
 
 
 //////////////////
-from app import index
+from app import calcular_resultado
 
 def test_index():
-    assert index() == "El resultado mayor a 20"
+    assert calcular_resultado() > 20
+
 
 //////////////////////////
 ------------------------------------------------------------------

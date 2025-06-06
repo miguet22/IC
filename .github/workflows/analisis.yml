@@ -78,14 +78,12 @@ jobs:
     if: success()
     runs-on: ubuntu-latest
     steps:
-      - name: Notificar a Slack si fue exitoso 🎉
+      - uses: actions/checkout@v4
+
+      - name: Ejecutar script de Python para notificar a Slack sobre el exito del deploy
         run: |
-          curl -X POST -H 'Content-type: application/json' \
-          --data '{
-            "text":"✅ *Deploy exitoso!* 🎉\nRepositorio: '${{ github.repository }}'\nAutor: '${{ github.actor }}'\n🔗 URL: https://ic-qt8c.onrender.com/",
-            "attachments":[{"image_url":"https://media1.tenor.com/m/wsChytFfrS4AAAAd/monki-flip-monkey.gif"}]
-          }' \
-          ${{ secrets.SLACK_WEBHOOK_URL }}
+            python3 yaml/slack_notify_sucess.py
+
 
   notify-slack-on-failure:
       needs: build

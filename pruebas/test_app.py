@@ -1,6 +1,4 @@
-from app import index
+from app import calcular_resultado
 
 def test_index():
-    assert index() == "la multi es mayor a 10"
-
-    
+    assert calcular_resultado() > 20
