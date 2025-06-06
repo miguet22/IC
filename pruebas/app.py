@@ -21,7 +21,7 @@ def index():
                 padding-top: 50px;
             }}
             .resultado {{
-                font-size: 2em;
+                font-size: 3em;
                 color: #333;
                 background-color: #fff;
                 display: inline-block;
