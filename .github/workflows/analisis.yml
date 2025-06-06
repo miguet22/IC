@@ -57,6 +57,17 @@ jobs:
       - name: Set app URL
         id: set_url
         run: echo "url=https://ic-ingsw.onrender.com/" >> $GITHUB_OUTPUT
+  
+  notify-slack-success:
+    needs: update-trello-card
+    if: success()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Ejecutar script de Python para notificar a Slack sobre el exito del deploy
+        run: |
+            python3 yaml/slack_notify_sucess.py
 
   update-trello-card:
     needs: deploy
@@ -73,16 +84,7 @@ jobs:
           TRELLO_DOING_LIST_ID: ${{ secrets.TRELLO_DOING_LIST_ID }}
           TRELLO_DONE_LIST_ID: ${{ secrets.TRELLO_DONE_LIST_ID }}
 
-  notify-slack-success:
-    needs: update-trello-card
-    if: success()
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Ejecutar script de Python para notificar a Slack sobre el exito del deploy
-        run: |
-            python3 yaml/slack_notify_sucess.py
+  
 
 
   notify-slack-on-failure:
