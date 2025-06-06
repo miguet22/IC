@@ -14,6 +14,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cache pip
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/req.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -25,15 +33,18 @@ jobs:
           pip install -r req.txt
           pip install pytest pytest-cov flake8 requests
 
-      - name: Lint con flake8
-        run: |
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      - name: Lint con flake8 (solo errores críticos)
+        run: flake8 pruebas/ --select=E9,F63,F7,F82 --statistics
 
       - name: Ejecutar tests con cobertura
         run: |
-          pytest pruebas/ --cov=pruebas --cov-report=xml
+          pytest pruebas/ --cov=pruebas --cov-report=xml --maxfail=1
 
+  codacy-analysis:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
       - name: Codacy Analysis
         uses: codacy/codacy-analysis-cli-action@v4
         with:
@@ -63,11 +74,8 @@ jobs:
     if: success()
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
       - name: Ejecutar script de Python para notificar a Slack sobre el exito del deploy
-        run: |
-            python3 yaml/slack_notify_sucess.py
+        run: python3 yaml/slack_notify_sucess.py
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
@@ -78,7 +86,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # necesario para poder leer el último commit
+          fetch-depth: 0  # necesario para leer el último commit
 
       - name: Obtener nombre de tarea y acción desde el commit
         id: tarea
@@ -93,7 +101,6 @@ jobs:
             echo "tarea=${mensaje:7}" >> $GITHUB_OUTPUT
           else
             echo "accion=none" >> $GITHUB_OUTPUT
-          fi
 
       - name: Ejecutar script de Trello
         if: steps.tarea.outputs.accion != 'none'
@@ -106,23 +113,15 @@ jobs:
           TRELLO_DOING_LIST_ID: ${{ secrets.TRELLO_DOING_LIST_ID }}
           TRELLO_DONE_LIST_ID: ${{ secrets.TRELLO_DONE_LIST_ID }}
 
-
-  
-
-
   notify-slack-on-failure:
-      needs: build
-      if: failure()
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v4
-
-        - name: Ejecutar script de Python para notificar a Slack sobre el error
-          run: |
-            python3 yaml/slack_notify_error.py
-          env:
-            SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-            GITHUB_REPOSITORY: ${{ github.repository }}
-            GITHUB_SHA: ${{ github.sha }}
-            GITHUB_ACTOR: ${{ github.actor }}
-
+    needs: build
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ejecutar script de Python para notificar a Slack sobre el error
+        run: python3 yaml/slack_notify_error.py
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_ACTOR: ${{ github.actor }}

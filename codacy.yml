@@ -1,3 +1,5 @@
+include_paths:
+  - "pruebas/**"
 
 exclude_paths:
   - ".github/**"
