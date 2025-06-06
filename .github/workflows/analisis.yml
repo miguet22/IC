@@ -71,20 +71,41 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-  update-trello-card:
-    needs: deploy
-    if: success()
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+update-trello-card:
+  needs: deploy
+  if: success()
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # necesario para poder leer el último commit
 
-      - name: Ejecutar script de Trello
-        run: python yaml/trello_task_manager.py
-        env:
-          TRELLO_API_KEY: ${{ secrets.TRELLO_API_KEY }}
-          TRELLO_API_TOKEN: ${{ secrets.TRELLO_API_TOKEN }}
-          TRELLO_DOING_LIST_ID: ${{ secrets.TRELLO_DOING_LIST_ID }}
-          TRELLO_DONE_LIST_ID: ${{ secrets.TRELLO_DONE_LIST_ID }}
+    - name: Obtener nombre de tarea y acción desde el commit
+      id: tarea
+      run: |
+        mensaje=$(git log -1 --pretty=%B)
+        mensaje_lc=$(echo "$mensaje" | tr '[:upper:]' '[:lower:]')
+        if [[ $mensaje_lc == \#finish* ]]; then
+          echo "accion=finish" >> $GITHUB_OUTPUT
+          echo "tarea=${mensaje:8}" >> $GITHUB_OUTPUT
+        elif [[ $mensaje_lc == \#start* ]]; then
+          echo "accion=start" >> $GITHUB_OUTPUT
+          echo "tarea=${mensaje:7}" >> $GITHUB_OUTPUT
+        else
+          echo "accion=none" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Ejecutar script de Trello
+      if: steps.tarea.outputs.accion != 'none'
+      run: |
+        python yaml/trello_task_manager.py "${{ steps.tarea.outputs.accion }}" "${{ steps.tarea.outputs.tarea }}"
+      env:
+        TRELLO_API_KEY: ${{ secrets.TRELLO_API_KEY }}
+        TRELLO_API_TOKEN: ${{ secrets.TRELLO_API_TOKEN }}
+        TRELLO_TODO_LIST_ID: ${{ secrets.TRELLO_TODO_LIST_ID }}
+        TRELLO_DOING_LIST_ID: ${{ secrets.TRELLO_DOING_LIST_ID }}
+        TRELLO_DONE_LIST_ID: ${{ secrets.TRELLO_DONE_LIST_ID }}
+
 
   
 
