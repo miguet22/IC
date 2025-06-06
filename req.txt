@@ -2,4 +2,4 @@ flask
 pytest
 coverage
 flake8
-gunicorn
+requests
