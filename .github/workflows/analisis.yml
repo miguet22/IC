@@ -100,7 +100,7 @@ jobs:
             echo "tarea=${mensaje:7}" >> $GITHUB_OUTPUT
           else
             echo "accion=none" >> $GITHUB_OUTPUT
-
+          fi
       - name: Ejecutar script de Trello
         if: steps.tarea.outputs.accion != 'none'
         run: |
