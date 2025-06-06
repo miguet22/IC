@@ -87,7 +87,7 @@ jobs:
           }' \
           ${{ secrets.SLACK_WEBHOOK_URL }}
 
-    notify-slack-on-failure:
+  notify-slack-on-failure:
       needs: build
       if: failure()
       runs-on: ubuntu-latest
