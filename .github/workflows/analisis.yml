@@ -59,7 +59,7 @@ jobs:
         run: echo "url=https://ic-ingsw.onrender.com/" >> $GITHUB_OUTPUT
   
   notify-slack-success:
-    needs: update-trello-card
+    needs: deploy
     if: success()
     runs-on: ubuntu-latest
     steps:
