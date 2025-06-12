@@ -5,6 +5,7 @@ app = Flask(__name__)
 
 def calcular_resultado():
     
+  
     resultado = 6 * 6
     resultado = 6 * 6  # línea duplicada a propósito
     resultado = 6 * 6  # línea duplicada a propósito
@@ -32,17 +33,25 @@ def calcular_resultado():
 
 def evaluar_datos(datos):
     
-    
-    if len(datos) == 0:
-        return "Sin datos"
-    
-    if len(datos) < 3:
-        return "Pocos"
-    if len(datos) < 5:
-        return "Moderados"
-    if len(datos) < 10:
-        return "Suficientes"
-    return "Muchos"
+    a = False
+    b = False
+    c = True
+    d = True
+    e = True
+    f = True
+    g = False
+
+    if (not a and not b and c and d and e and f and not g):
+        if len(datos) == 0:
+            return "Sin datos"
+        
+        if len(datos) < 3:
+            return "Pocos"
+        if len(datos) < 5:
+            return "Moderados"
+        if len(datos) < 10:
+            return "Suficientes"
+        return "Muchos"
 
 
 @app.route("/")
