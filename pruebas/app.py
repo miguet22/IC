@@ -4,42 +4,55 @@ app = Flask(__name__)
 
 
 def calcular_resultado():
-    return 6 * 6
+    # ♦♦♦ Duplicate Code ♦♦♦
+    resultado = 6 * 6
+    resultado = 6 * 6  # línea duplicada a propósito
+    resultado = 6 * 6  # línea duplicada a propósito
+    
+    if resultado < 0:
+        return "negativo"
+    elif resultado == 0:
+        return "cero"
+    elif resultado < 10:
+        return "pequeño"
+    elif resultado > 30:
+        return resultado
+    
+
+
+def evaluar_datos(datos):
+    
+    
+    if len(datos) == 0:
+        return "Sin datos"
+    
+    if len(datos) < 3:
+        return "Pocos"
+    if len(datos) < 5:
+        return "Moderados"
+    if len(datos) < 10:
+        return "Suficientes"
+    return "Muchos"
+
 
 @app.route("/")
 def index():
     resultado = calcular_resultado()
+    estado = evaluar_datos([])
     return f"""
     <!DOCTYPE html>
     <html>
-    <head>
-        <title>Resultado</title>
-        <style>
-            body {{
-                font-family: Arial, sans-serif;
-                background-color: #f0f0f0;
-                text-align: center;
-                padding-top: 50px;
-            }}
-            .resultado {{
-                font-size: 2em;
-                color: #333;
-                background-color: #fff;
-                display: inline-block;
-                padding: 20px 40px;
-                border-radius: 10px;
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            }}
-        </style>
-    </head>
+    <head><title>Resultado</title></head>
     <body>
-        <div class="resultado">
-            El resultado es: <strong>{resultado}</strong>
-        </div>
+        <h1>El resultado es: {resultado}</h1>
+        <p>Estado de datos: {estado}</p>
     </body>
     </html>
     """
 
 
+
+
 if __name__ == "__main__":
+   
     app.run(host="0.0.0.0", port=10000)
