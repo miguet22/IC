@@ -1,3 +1,5 @@
+# trello_task_manager.py
+
 import os
 import requests
 import sys
@@ -14,6 +16,11 @@ token = os.getenv("TRELLO_API_TOKEN")
 todo_list_id = os.getenv("TRELLO_TODO_LIST_ID")
 doing_list_id = os.getenv("TRELLO_DOING_LIST_ID")
 done_list_id = os.getenv("TRELLO_DONE_LIST_ID")
+
+# Si la acción es 'none', no hacer nada
+if accion == "none":
+    print(f"✔️ La tarea '{card_name}' sigue en progreso. No se realiza ninguna acción.")
+    sys.exit(0)
 
 if accion == "start":
     from_list = todo_list_id
