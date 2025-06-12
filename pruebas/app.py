@@ -3,7 +3,7 @@ from flask import Flask
 app = Flask(__name__)
 
 def calcular_resultado():
-    return 55 * 6
+    return 6 * 6
 
 @app.route("/")
 def index():
