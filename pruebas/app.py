@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 
 def calcular_resultado():
-    return 6 * 6
+    return 9 * 6
 
 @app.route("/")
 def index():
@@ -30,20 +30,11 @@ def index():
                 border-radius: 10px;
                 box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             }}
-            .imagen {{
-                margin-top: 30px;
-            }}
         </style>
     </head>
     <body>
         <div class="resultado">
             El resultado es: <strong>{resultado}</strong>
-        </div>
-        <div class="resultado">
-            CR7 BETTER THAN LAMINE>
-        </div>
-        <div class="imagen">
-            <img src="/img/photo.jpg" alt="Imagen decorativa">
         </div>
     </body>
     </html>
