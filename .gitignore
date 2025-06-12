@@ -1,0 +1,7 @@
+# Carpetas temporales generales
+__pycache__/
+.pytest_cache/
+
+# Carpetas temporales dentro de 'pruebas'
+pruebas/__pycache__/
+pruebas/.pytest_cache/
