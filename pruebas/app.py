@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 
 def calcular_resultado():
-    return 20 * 6
+    return 40 * 6
 
 
 @app.route("/")

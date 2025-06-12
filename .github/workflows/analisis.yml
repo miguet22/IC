@@ -33,10 +33,10 @@ jobs:
           pip install -r req.txt
           pip install pytest pytest-cov flake8 requests
 
-      - name: Lint con flake8
+      - name: Lint completo sobre app.py con flake8
         run: |
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+          flake8 pruebas/app.py --count --show-source --statistics
+          flake8 pruebas/app.py --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
       - name: Ejecutar tests con cobertura
         run: |
@@ -100,7 +100,7 @@ jobs:
             echo "tarea=${mensaje:7}" >> $GITHUB_OUTPUT
           else
             echo "accion=none" >> $GITHUB_OUTPUT
-            echo "tarea=${mensaje}" >> $GITHUB_OUTPUT  # En este caso, pasamos el mensaje entero
+            echo "tarea=${mensaje}" >> $GITHUB_OUTPUT  
           fi
       - name: Ejecutar script de Trello
         if: steps.tarea.outputs.accion != 'none'
