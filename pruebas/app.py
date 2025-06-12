@@ -4,15 +4,25 @@ app = Flask(__name__)
 
 
 def calcular_resultado():
-    # ♦♦♦ Duplicate Code ♦♦♦
+    
     resultado = 6 * 6
     resultado = 6 * 6  # línea duplicada a propósito
     resultado = 6 * 6  # línea duplicada a propósito
     
-    if resultado < 0:
+    if resultado < 1:
         return "negativo"
     elif resultado == 0:
         return "cero"
+    elif resultado == 1:
+        return "uno"
+    elif resultado == 2:
+        return "dos"
+    elif resultado == 3:
+        return "tres"
+    elif resultado == 4:
+        return "cuatro"
+    elif resultado == 5:
+        return "cinco"
     elif resultado < 10:
         return "pequeño"
     elif resultado > 30:
