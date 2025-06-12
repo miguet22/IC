@@ -32,7 +32,12 @@ def calcular_resultado():
 
 
 def evaluar_datos(datos):
-    
+    x = 0
+    for i in range(20):
+        x = x + 1
+    else:
+        print("Terminó el for")
+        
     a = False
     b = False
     c = True
