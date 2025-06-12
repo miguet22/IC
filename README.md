@@ -1,0 +1,1 @@
+![Entorno de IC](img/Entorno.jpg)
